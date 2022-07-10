@@ -1,6 +1,60 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /blog
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+# 내 context-path 즉 진입점을 설정하는 것이다. 그래서 반드시 blog가 붙어야된다.
+    
 spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+  # 만약 
+  # mvc:
+  #   view:
+  #     prefix: /WEB-INF/views/
+  #     suffix: .jsp
+  # 을 없애고 실행한뒤  temp/home을 가게되면 static의 home.html을 리턴하게 된다.
+  # Spring은 기본적으로 메소드들의 파일 리턴 경로가 : /src/main/resources/static 이다. 
+  #  (static은 브라우저가 인식하는 정적 파일들만 모아두는 곳 html,png 등등) 하지만 JSP는 컴파일이 되야하는 동적 파일이다.
+  # 따라서 JSP파일을 사용할려면 static이 아닌 다른 경로로 변경해줘야한다.
+  # Controller가 실행 되고 리턴될경우
+  # prefix/.suffix 파일이 리턴 된다.
+  # /WEB-INF/views/test.jsp
+
+  # 참고
+  # RestController은 데이터를 리턴 와 Controller는 해당 경로의 파일을 리턴 한다.
+  # 하지만 우리는 JSP 파일을 리턴해줘야 한다.
+  # 근데 Spring은 JSP를 지원하지 않는다.
+  # 그래서 Pom.xml에 JSP템플릿 엔진을 선언해준다.
+  
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/blog?serverTimezone=Asia/Seoul
     username: cos
     password: ipconfig!2
+  # 데이터베이스 설정
+    
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+      # create는 프로젝트를 실행할때마다 DB에 테이블을 새로 만들겠다는 뜻이다.
+      # 그래서 최초에만 create를 해주고 다음부터는 update를 해줘야한다.
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        # [org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl]  테이블을 만들때 변수명 그대로 테이블에 넣어준다.
+        # [org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy] MyEmail같은 변수를 my_email로 변경해서 넣어준다.
+        # 대체로 PhysicalNamingStrategyStandardImpl을 많이 쓴다.
+      use-new-id-generator-mappings: false      # JPA의 기본 넘버링 전략을 DB에서 따라가지 않는다는 뜻이다.
+    show-sql: true # 콘솔창에 sql이 업데이트된것을 보여줌
+    properties:
+      hibernate.format_sql: true
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
